@@ -9,31 +9,93 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
 </head>
 <body>
     <div id="root"></div>
+    
     <script type="text/babel">
-        const { Upload, FileText, Settings, Download, ChevronRight, ChevronLeft, Check, AlertCircle, Plus, X } = lucide;
+        // Lucide icons as inline SVG components
+        const Upload = ({size = 24, ...props}) => (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+        );
+        
+        const FileText = ({size = 24, ...props}) => (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        );
+        
+        const Settings = ({size = 24, ...props}) => (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 1v6m0 6v6m-9-9h6m6 0h6"></path>
+          </svg>
+        );
+        
+        const Download = ({size = 24, ...props}) => (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        );
+        
+        const ChevronRight = ({size = 24, ...props}) => (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        );
+        
+        const ChevronLeft = ({size = 24, ...props}) => (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        );
+        
+        const Check = ({size = 24, ...props}) => (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        );
+        
+        const AlertCircle = ({size = 24, ...props}) => (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        );
+        
+        const Plus = ({size = 24, ...props}) => (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        );
+        
+        const X = ({size = 24, ...props}) => (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        );
 
         const SalesforceKnowledgeImportTool = () => {
           const [step, setStep] = React.useState(1);
           const [csvData, setCsvData] = React.useState(null);
           const [csvHeaders, setCsvHeaders] = React.useState([]);
-          const [columnMappings, setColumnMappings] = React.useState({});
           const [richTextColumns, setRichTextColumns] = React.useState([]);
           const [lookupFields, setLookupFields] = React.useState([]);
           const [dataCategoryGroups, setDataCategoryGroups] = React.useState([]);
-          const [dataCategoryConfig, setDataCategoryConfig] = React.useState({
-            selectionColumn: ''
-          });
-          const [referenceData, setReferenceData] = React.useState({
-            recordTypeIds: null,
-            emailRef: null,
-            scriptRef: null,
-            dataCategories: null,
-            mailRef: null
-          });
+          const [dataCategoryConfig, setDataCategoryConfig] = React.useState({ selectionColumn: '' });
           const [outputSettings, setOutputSettings] = React.useState({
             csvEncoding: 'UTF-8',
             csvSeparator: ',',
@@ -42,7 +104,6 @@
             outputFilename: 'PreppedData.csv'
           });
           const fileInputRef = React.useRef(null);
-          const [template, setTemplate] = React.useState(null);
 
           const steps = [
             { number: 1, title: 'Upload CSV', icon: Upload },
@@ -53,52 +114,30 @@
             { number: 6, title: 'Generate', icon: Download }
           ];
 
-          const detectColumnType = (columnName) => {
-            const name = columnName.toLowerCase();
-            if (name.includes('answer') || name.includes('external_content')) {
-              return 'richtext';
-            }
-            if (name.includes('datacategorygroup')) {
-              return 'datacategory';
-            }
-            return 'standard';
-          };
-
           const parseDataCategorySelections = (selectionsText) => {
             if (!selectionsText) return {};
-            
             const categoryMap = {};
-            
             try {
               const recordsMatch = selectionsText.match(/records=\[(.*?)\]/s);
               if (!recordsMatch) return {};
-              
               const recordsText = recordsMatch[1];
               const records = recordsText.split(/\},\s*\{attributes=/);
-              
               records.forEach(record => {
                 const groupMatch = record.match(/DataCategoryGroupName=([^,}\s]+)/);
                 const categoryMatch = record.match(/DataCategoryName=([^,}\s]+)/);
-                
                 if (groupMatch && categoryMatch) {
                   const groupName = groupMatch[1].trim();
                   const categoryName = categoryMatch[1].trim();
-                  
-                  if (!categoryMap[groupName]) {
-                    categoryMap[groupName] = [];
-                  }
+                  if (!categoryMap[groupName]) categoryMap[groupName] = [];
                   categoryMap[groupName].push(categoryName);
                 }
               });
-              
               Object.keys(categoryMap).forEach(group => {
                 categoryMap[group] = categoryMap[group].join('+');
               });
-              
             } catch (error) {
               console.error('Error parsing data category selections:', error);
             }
-            
             return categoryMap;
           };
 
@@ -111,22 +150,15 @@
                 complete: (results) => {
                   setCsvData(results.data);
                   setCsvHeaders(results.meta.fields);
-                  
-                  const detectedRichText = results.meta.fields.filter(header => 
-                    detectColumnType(header) === 'richtext'
+                  const detectedRichText = results.meta.fields.filter(h => 
+                    h.toLowerCase().includes('answer') || h.toLowerCase().includes('external_content')
                   );
                   setRichTextColumns(detectedRichText);
-                  
                   const dataCatCol = results.meta.fields.find(h => 
-                    h.toLowerCase().includes('datacategoryselection') ||
-                    h.toLowerCase().includes('datacategory')
+                    h.toLowerCase().includes('datacategoryselection') || h.toLowerCase().includes('datacategory')
                   );
-                  
                   if (dataCatCol) {
-                    setDataCategoryConfig({
-                      selectionColumn: dataCatCol
-                    });
-                    
+                    setDataCategoryConfig({ selectionColumn: dataCatCol });
                     const allGroups = new Set();
                     results.data.forEach(row => {
                       const selections = row[dataCatCol];
@@ -135,54 +167,27 @@
                         Object.keys(parsed).forEach(group => allGroups.add(group));
                       }
                     });
-                    
                     setDataCategoryGroups(Array.from(allGroups).map(group => ({
                       groupName: group,
                       columnName: `datacategorygroup.${group}`
                     })));
-                  } else {
-                    setDataCategoryGroups([]);
                   }
-                  
                   setStep(2);
                 },
-                error: (error) => {
-                  alert('Error parsing CSV: ' + error.message);
-                }
-              });
-            }
-          };
-
-          const handleReferenceUpload = (refType, event) => {
-            const file = event.target.files[0];
-            if (file) {
-              Papa.parse(file, {
-                header: true,
-                skipEmptyLines: true,
-                complete: (results) => {
-                  setReferenceData(prev => ({
-                    ...prev,
-                    [refType]: results.data
-                  }));
-                }
+                error: (error) => alert('Error parsing CSV: ' + error.message)
               });
             }
           };
 
           const toggleRichTextColumn = (column) => {
             setRichTextColumns(prev => 
-              prev.includes(column) 
-                ? prev.filter(c => c !== column)
-                : [...prev, column]
+              prev.includes(column) ? prev.filter(c => c !== column) : [...prev, column]
             );
           };
 
           const addLookupField = () => {
             setLookupFields(prev => [...prev, { 
-              fieldName: '', 
-              lookupColumn: '', 
-              idColumn: '', 
-              referenceData: null 
+              fieldName: '', lookupColumn: '', idColumn: '', referenceData: null 
             }]);
           };
 
@@ -217,44 +222,13 @@
             }
           };
 
-          const addDataCategoryGroup = () => {
-            setDataCategoryGroups(prev => [...prev, { groupName: '', columnName: '' }]);
-          };
-
-          const updateDataCategoryGroup = (index, field, value) => {
-            setDataCategoryGroups(prev => {
-              const updated = [...prev];
-              updated[index][field] = value;
-              return updated;
-            });
-          };
-
-          const removeDataCategoryGroup = (index) => {
-            setDataCategoryGroups(prev => prev.filter((_, i) => i !== index));
-          };
-
-          const downloadFile = (content, filename, type) => {
-            const blob = new Blob([content], { type });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-          };
-
           const crc32 = (data) => {
             const table = [];
             for (let i = 0; i < 256; i++) {
               let c = i;
-              for (let j = 0; j < 8; j++) {
-                c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
-              }
+              for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
               table[i] = c;
             }
-            
             let crc = 0 ^ (-1);
             for (let i = 0; i < data.length; i++) {
               crc = (crc >>> 8) ^ table[(crc ^ data[i]) & 0xFF];
@@ -275,7 +249,6 @@
               
               const localHeader = new Uint8Array(30 + filenameBytes.length);
               const lhView = new DataView(localHeader.buffer);
-              
               lhView.setUint32(0, 0x04034b50, true);
               lhView.setUint16(4, 20, true);
               lhView.setUint16(6, 0, true);
@@ -287,27 +260,19 @@
               lhView.setUint32(22, contentBytes.length, true);
               lhView.setUint16(26, filenameBytes.length, true);
               lhView.setUint16(28, 0, true);
-              
               localHeader.set(filenameBytes, 30);
               
               localHeaders.push({
-                header: localHeader,
-                content: contentBytes,
-                filename: filenameBytes,
-                crc: crc,
-                size: contentBytes.length,
-                offset: offset
+                header: localHeader, content: contentBytes, filename: filenameBytes,
+                crc: crc, size: contentBytes.length, offset: offset
               });
-              
               offset += localHeader.length + contentBytes.length;
             });
 
             const centralDirStart = offset;
-            
             localHeaders.forEach(({ filename, crc, size, offset: localOffset }) => {
               const cdHeader = new Uint8Array(46 + filename.length);
               const cdView = new DataView(cdHeader.buffer);
-              
               cdView.setUint32(0, 0x02014b50, true);
               cdView.setUint16(4, 20, true);
               cdView.setUint16(6, 20, true);
@@ -325,17 +290,14 @@
               cdView.setUint16(36, 0, true);
               cdView.setUint32(38, 0, true);
               cdView.setUint32(42, localOffset, true);
-              
               cdHeader.set(filename, 46);
               centralHeaders.push(cdHeader);
               offset += cdHeader.length;
             });
 
             const centralDirSize = offset - centralDirStart;
-            
             const eocd = new Uint8Array(22);
             const eocdView = new DataView(eocd.buffer);
-            
             eocdView.setUint32(0, 0x06054b50, true);
             eocdView.setUint16(4, 0, true);
             eocdView.setUint16(6, 0, true);
@@ -352,7 +314,6 @@
             });
             centralHeaders.forEach(header => parts.push(header));
             parts.push(eocd);
-
             return new Blob(parts, { type: 'application/zip' });
           };
 
@@ -384,27 +345,18 @@
                     const fileName = isExternal 
                       ? `extfiles/FileExt${rowNumber}.html`
                       : `files/File${rowNumber}.html`;
-                    
-                    files.push({
-                      filename: fileName,
-                      content: row[column]
-                    });
-                    
+                    files.push({ filename: fileName, content: row[column] });
                     newRow[column] = fileName;
                   }
                 });
                 
                 if (dataCategoryConfig.selectionColumn) {
                   const selectionsText = row[dataCategoryConfig.selectionColumn];
-                  
                   if (selectionsText) {
                     const categoryMap = parseDataCategorySelections(selectionsText);
-                    
                     delete newRow[dataCategoryConfig.selectionColumn];
-                    
                     dataCategoryGroups.forEach(group => {
-                      const columnName = group.columnName;
-                      newRow[columnName] = categoryMap[group.groupName] || '';
+                      newRow[group.columnName] = categoryMap[group.groupName] || '';
                     });
                   } else {
                     dataCategoryGroups.forEach(group => {
@@ -412,7 +364,6 @@
                     });
                   }
                 }
-                
                 return newRow;
               });
               
@@ -433,7 +384,6 @@ CSVSeparator=${outputSettings.csvSeparator}
               );
               
               const zipBlob = createZipBlob(files);
-              
               const url = URL.createObjectURL(zipBlob);
               const a = document.createElement('a');
               a.href = url;
@@ -443,58 +393,10 @@ CSVSeparator=${outputSettings.csvSeparator}
               document.body.removeChild(a);
               URL.revokeObjectURL(url);
               
-              alert(`Successfully created ZIP file with ${files.length} files!\n\n` +
-                    `The ZIP contains:\n` +
-                    `- properties.properties\n` +
-                    `- ${outputSettings.outputFilename}\n` +
-                    `- ${files.length - 2} HTML files in folders\n\n` +
-                    `Ready to upload to Salesforce!`);
+              alert(`Successfully created ZIP with ${files.length} files!`);
             } catch (error) {
-              alert('Error creating ZIP file: ' + error.message);
+              alert('Error creating ZIP: ' + error.message);
               console.error(error);
-            }
-          };
-
-          const saveTemplate = () => {
-            const templateData = {
-              richTextColumns,
-              lookupFields: lookupFields.map(lf => ({
-                fieldName: lf.fieldName,
-                lookupColumn: lf.lookupColumn,
-                idColumn: lf.idColumn
-              })),
-              dataCategoryConfig,
-              outputSettings
-            };
-            const templateJson = JSON.stringify(templateData, null, 2);
-            const blob = new Blob([templateJson], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'sf-knowledge-template.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-          };
-
-          const loadTemplate = (event) => {
-            const file = event.target.files[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                try {
-                  const templateData = JSON.parse(e.target.result);
-                  setRichTextColumns(templateData.richTextColumns || []);
-                  setLookupFields(templateData.lookupFields || []);
-                  setDataCategoryConfig(templateData.dataCategoryConfig || { selectionColumn: '' });
-                  setOutputSettings(templateData.outputSettings || outputSettings);
-                  alert('Template loaded successfully!');
-                } catch (error) {
-                  alert('Error loading template: ' + error.message);
-                }
-              };
-              reader.readAsText(file);
             }
           };
 
@@ -511,7 +413,7 @@ CSVSeparator=${outputSettings.csvSeparator}
                 </div>
 
                 <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between overflow-x-auto">
                     {steps.map((s, index) => {
                       const StepIcon = s.icon;
                       const isActive = step === s.number;
@@ -519,11 +421,10 @@ CSVSeparator=${outputSettings.csvSeparator}
                       
                       return (
                         <React.Fragment key={s.number}>
-                          <div className="flex flex-col items-center">
+                          <div className="flex flex-col items-center min-w-fit">
                             <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                               isCompleted ? 'bg-green-500 text-white' :
-                              isActive ? 'bg-indigo-600 text-white' : 
-                              'bg-gray-200 text-gray-500'
+                              isActive ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'
                             }`}>
                               {isCompleted ? <Check size={24} /> : <StepIcon size={24} />}
                             </div>
@@ -544,47 +445,23 @@ CSVSeparator=${outputSettings.csvSeparator}
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-lg p-6 min-h-96">
+                <div className="bg-white rounded-lg shadow-lg p-6" style={{minHeight: '400px'}}>
                   {step === 1 && (
                     <div className="space-y-6">
                       <h2 className="text-2xl font-bold text-gray-800">Upload Your CSV File</h2>
-                      
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-indigo-500 transition-colors">
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-indigo-500 transition-colors cursor-pointer"
+                           onClick={() => fileInputRef.current?.click()}>
                         <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                         <p className="text-lg text-gray-600 mb-2">
-                          Drag and drop your CSV file here, or click to browse
+                          Click to select your CSV file
                         </p>
                         <input
                           ref={fileInputRef}
                           type="file"
                           accept=".csv"
                           onChange={handleCSVUpload}
-                          className="hidden"
+                          style={{display: 'none'}}
                         />
-                        <button
-                          onClick={() => fileInputRef.current.click()}
-                          className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                        >
-                          Select CSV File
-                        </button>
-                      </div>
-
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <div className="flex items-start">
-                          <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
-                          <div>
-                            <h3 className="font-semibold text-blue-900 mb-1">Template Support</h3>
-                            <p className="text-sm text-blue-800 mb-3">
-                              Have a saved configuration? Load a template to auto-configure your settings.
-                            </p>
-                            <input
-                              type="file"
-                              accept=".json"
-                              onChange={loadTemplate}
-                              className="text-sm"
-                            />
-                          </div>
-                        </div>
                       </div>
                     </div>
                   )}
@@ -593,59 +470,11 @@ CSVSeparator=${outputSettings.csvSeparator}
                     <div className="space-y-6">
                       <h2 className="text-2xl font-bold text-gray-800">Review Detected Columns</h2>
                       <p className="text-gray-600">
-                        We've detected {csvHeaders.length} columns from your CSV. Review the auto-detected settings below.
+                        We've detected {csvHeaders.length} columns. {richTextColumns.length} rich text columns found.
                       </p>
-                      
-                      <div className="bg-gray-50 rounded-lg p-4 max-h-96 overflow-y-auto">
-                        <table className="w-full">
-                          <thead className="bg-gray-200 sticky top-0">
-                            <tr>
-                              <th className="px-4 py-2 text-left">Column Name</th>
-                              <th className="px-4 py-2 text-left">Type</th>
-                              <th className="px-4 py-2 text-left">Sample Data</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {csvHeaders.map((header, index) => (
-                              <tr key={index} className="border-b border-gray-200">
-                                <td className="px-4 py-2 font-mono text-sm">{header}</td>
-                                <td className="px-4 py-2">
-                                  <span className={`px-2 py-1 rounded text-xs ${
-                                    richTextColumns.includes(header) 
-                                      ? 'bg-purple-100 text-purple-800'
-                                      : header.toLowerCase().includes('datacategorygroup')
-                                      ? 'bg-blue-100 text-blue-800'
-                                      : 'bg-gray-100 text-gray-800'
-                                  }`}>
-                                    {richTextColumns.includes(header) 
-                                      ? 'Rich Text'
-                                      : header.toLowerCase().includes('datacategorygroup')
-                                      ? 'Data Category'
-                                      : 'Standard'}
-                                  </span>
-                                </td>
-                                <td className="px-4 py-2 text-sm text-gray-600 truncate max-w-xs">
-                                  {csvData[0] && csvData[0][header] 
-                                    ? csvData[0][header].substring(0, 50) + '...'
-                                    : '-'}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-
                       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <div className="flex items-start">
-                          <Check className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
-                          <div>
-                            <h3 className="font-semibold text-green-900">Auto-Detection Complete</h3>
-                            <p className="text-sm text-green-800">
-                              Found {richTextColumns.length} rich text columns and {dataCategoryGroups.length} data category groups.
-                              You can customize these in the next steps.
-                            </p>
-                          </div>
-                        </div>
+                        <Check className="inline h-5 w-5 text-green-600 mr-2" />
+                        <span className="font-semibold text-green-900">Ready to proceed!</span>
                       </div>
                     </div>
                   )}
@@ -653,48 +482,20 @@ CSVSeparator=${outputSettings.csvSeparator}
                   {step === 3 && (
                     <div className="space-y-6">
                       <h2 className="text-2xl font-bold text-gray-800">Select Rich Text Columns</h2>
-                      <p className="text-gray-600">
-                        Rich text columns will be extracted into separate HTML files. Select all columns that contain HTML content.
-                      </p>
-                      
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {csvHeaders.map((header) => (
-                          <label
-                            key={header}
-                            className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                              richTextColumns.includes(header)
-                                ? 'border-indigo-500 bg-indigo-50'
-                                : 'border-gray-200 hover:border-gray-300'
-                            }`}
-                          >
+                          <label key={header} className={`flex items-center p-4 border-2 rounded-lg cursor-pointer ${
+                            richTextColumns.includes(header) ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'
+                          }`}>
                             <input
                               type="checkbox"
                               checked={richTextColumns.includes(header)}
                               onChange={() => toggleRichTextColumn(header)}
                               className="h-5 w-5 text-indigo-600 rounded mr-3"
                             />
-                            <div className="flex-1">
-                              <div className="font-medium text-gray-900">{header}</div>
-                              {richTextColumns.includes(header) && (
-                                <div className="text-xs text-indigo-600 mt-1">
-                                  → Will create {header.toLowerCase().includes('external') ? 'extfiles/' : 'files/'}File*.html
-                                </div>
-                              )}
-                            </div>
+                            <div className="font-medium text-gray-900">{header}</div>
                           </label>
                         ))}
-                      </div>
-
-                      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                        <div className="flex items-start">
-                          <FileText className="h-5 w-5 text-purple-600 mt-0.5 mr-3 flex-shrink-0" />
-                          <div>
-                            <h3 className="font-semibold text-purple-900">Selected: {richTextColumns.length} columns</h3>
-                            <p className="text-sm text-purple-800">
-                              These columns will be saved as HTML files and referenced in the final CSV.
-                            </p>
-                          </div>
-                        </div>
                       </div>
                     </div>
                   )}
@@ -702,296 +503,82 @@ CSVSeparator=${outputSettings.csvSeparator}
                   {step === 4 && (
                     <div className="space-y-6">
                       <h2 className="text-2xl font-bold text-gray-800">Configure Lookup Fields</h2>
-                      <p className="text-gray-600">
-                        Map lookup fields that need to be replaced with Salesforce IDs. Upload reference CSV files containing the lookup values and their corresponding IDs.
-                      </p>
-                      
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                        <div className="flex items-start">
-                          <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-blue-900 mb-2">How Lookup Fields Work</h3>
-                            <p className="text-sm text-blue-800 mb-3">
-                              For each lookup field, upload a CSV with two columns: the lookup value (e.g., "Email Template Name") and the Salesforce ID.
-                            </p>
-                            <div className="bg-white rounded p-3 text-xs">
-                              <strong>Example Reference CSV:</strong>
-                              <pre className="mt-1">TemplateName,TemplateId
-Welcome Email,00X1234567890ABC
-Confirmation,00X1234567890DEF</pre>
-                              <strong className="mt-2 block">Your Data:</strong>
-                              <pre className="mt-1">EmailTemplate__c
-Welcome Email  → Will be replaced with 00X1234567890ABC</pre>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
                       {lookupFields.length === 0 && (
-                        <div className="text-center py-8 text-gray-500">
-                          <p>No lookup fields configured yet. Click the button below to add one.</p>
+                        <div className="text-center py-8">
+                          <p className="text-gray-500">No lookup fields configured.</p>
                         </div>
                       )}
-
-                      <div className="space-y-4">
-                        {lookupFields.map((lookup, index) => (
-                          <div key={index} className="border-2 border-gray-300 rounded-lg p-4 bg-gray-50">
-                            <div className="flex items-start gap-4">
-                              <div className="flex-1 space-y-4">
-                                <div className="grid grid-cols-3 gap-4">
-                                  <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                      Field Name in Your CSV
-                                    </label>
-                                    <select
-                                      value={lookup.fieldName}
-                                      onChange={(e) => updateLookupField(index, 'fieldName', e.target.value)}
-                                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                    >
-                                      <option value="">Select field...</option>
-                                      {csvHeaders.map(header => (
-                                        <option key={header} value={header}>{header}</option>
-                                      ))}
-                                    </select>
-                                    <p className="text-xs text-gray-500 mt-1">
-                                      Column containing lookup values
-                                    </p>
-                                  </div>
-                                  
-                                  <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                      Upload Reference CSV
-                                    </label>
-                                    <input
-                                      type="file"
-                                      accept=".csv"
-                                      onChange={(e) => handleLookupReferenceUpload(index, e)}
-                                      className="w-full text-sm"
-                                    />
-                                    {lookup.referenceData && (
-                                      <p className="text-xs text-green-600 mt-1">
-                                        ✓ {lookup.referenceData.length} records loaded
-                                      </p>
-                                    )}
-                                  </div>
-
-                                  <div className="flex items-end">
-                                    <button
-                                      onClick={() => removeLookupField(index)}
-                                      className="px-4 py-2 text-red-600 hover:bg-red-50 rounded border border-red-300 w-full"
-                                    >
-                                      Remove
-                                    </button>
-                                  </div>
-                                </div>
-
-                                {lookup.referenceData && (
-                                  <div className="grid grid-cols-2 gap-4 pl-4 border-l-2 border-indigo-300">
-                                    <div>
-                                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Lookup Value Column
-                                      </label>
-                                      <select
-                                        value={lookup.lookupColumn}
-                                        onChange={(e) => updateLookupField(index, 'lookupColumn', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                      >
-                                        <option value="">Select column...</option>
-                                        {lookup.referenceData.length > 0 && Object.keys(lookup.referenceData[0]).map(col => (
-                                          <option key={col} value={col}>{col}</option>
-                                        ))}
-                                      </select>
-                                      <p className="text-xs text-gray-500 mt-1">
-                                        Column with values to match
-                                      </p>
-                                    </div>
-
-                                    <div>
-                                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        ID Column
-                                      </label>
-                                      <select
-                                        value={lookup.idColumn}
-                                        onChange={(e) => updateLookupField(index, 'idColumn', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                      >
-                                        <option value="">Select column...</option>
-                                        {lookup.referenceData.length > 0 && Object.keys(lookup.referenceData[0]).map(col => (
-                                          <option key={col} value={col}>{col}</option>
-                                        ))}
-                                      </select>
-                                      <p className="text-xs text-gray-500 mt-1">
-                                        Column with Salesforce IDs
-                                      </p>
-                                    </div>
-                                  </div>
-                                )}
-
-                                {lookup.referenceData && lookup.lookupColumn && lookup.idColumn && (
-                                  <div className="bg-green-50 border border-green-200 rounded p-3">
-                                    <p className="text-sm text-green-800">
-                                      <strong>Preview:</strong> Values in <span className="font-mono">{lookup.fieldName}</span> will be matched against{' '}
-                                      <span className="font-mono">{lookup.lookupColumn}</span> and replaced with IDs from{' '}
-                                      <span className="font-mono">{lookup.idColumn}</span>
-                                    </p>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
+                      {lookupFields.map((lookup, index) => (
+                        <div key={index} className="border-2 border-gray-300 rounded-lg p-4 space-y-4">
+                          <div className="grid grid-cols-3 gap-4">
+                            <select value={lookup.fieldName} onChange={(e) => updateLookupField(index, 'fieldName', e.target.value)}
+                                    className="px-3 py-2 border border-gray-300 rounded-md">
+                              <option value="">Select field...</option>
+                              {csvHeaders.map(h => <option key={h} value={h}>{h}</option>)}
+                            </select>
+                            <input type="file" accept=".csv" onChange={(e) => handleLookupReferenceUpload(index, e)} className="text-sm" />
+                            <button onClick={() => removeLookupField(index)} className="px-4 py-2 text-red-600 hover:bg-red-50 rounded border border-red-300">
+                              Remove
+                            </button>
                           </div>
-                        ))}
-                      </div>
-
-                      <button
-                        onClick={addLookupField}
-                        className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-indigo-500 hover:text-indigo-600 w-full justify-center"
-                      >
-                        <Plus size={20} />
-                        Add Lookup Field
+                          {lookup.referenceData && (
+                            <div className="grid grid-cols-2 gap-4 pl-4 border-l-2 border-indigo-300">
+                              <select value={lookup.lookupColumn} onChange={(e) => updateLookupField(index, 'lookupColumn', e.target.value)}
+                                      className="px-3 py-2 border border-gray-300 rounded-md text-sm">
+                                <option value="">Lookup column...</option>
+                                {lookup.referenceData.length > 0 && Object.keys(lookup.referenceData[0]).map(col => 
+                                  <option key={col} value={col}>{col}</option>
+                                )}
+                              </select>
+                              <select value={lookup.idColumn} onChange={(e) => updateLookupField(index, 'idColumn', e.target.value)}
+                                      className="px-3 py-2 border border-gray-300 rounded-md text-sm">
+                                <option value="">ID column...</option>
+                                {lookup.referenceData.length > 0 && Object.keys(lookup.referenceData[0]).map(col => 
+                                  <option key={col} value={col}>{col}</option>
+                                )}
+                              </select>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      <button onClick={addLookupField} className="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-indigo-500">
+                        <Plus size={20} /> Add Lookup Field
                       </button>
-
-                      {lookupFields.length > 0 && (
-                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                          <div className="flex items-start">
-                            <Check className="h-5 w-5 text-purple-600 mt-0.5 mr-3 flex-shrink-0" />
-                            <div>
-                              <h3 className="font-semibold text-purple-900">
-                                {lookupFields.length} Lookup Field{lookupFields.length > 1 ? 's' : ''} Configured
-                              </h3>
-                              <p className="text-sm text-purple-800">
-                                Values will be automatically replaced with Salesforce IDs during generation.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   )}
 
                   {step === 5 && (
                     <div className="space-y-6">
-                      <h2 className="text-2xl font-bold text-gray-800">Configure Data Category Groups</h2>
-                      <p className="text-gray-600">
-                        Parse DataCategorySelections column to extract category groups and values.
-                      </p>
-                      
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                        <div className="flex items-start">
-                          <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-blue-900 mb-2">DataCategorySelections Format</h3>
-                            <p className="text-sm text-blue-800 mb-3">
-                              The tool will parse Salesforce's DataCategorySelections format and create separate columns for each category group.
-                            </p>
-                            <div className="bg-white rounded p-3 text-xs overflow-x-auto">
-                              <strong>Example Input:</strong>
-                              <pre className="mt-1">{`{records=[
-  {DataCategoryGroupName=Agency, DataCategoryName=EBD_NYS_Retiree},
-  {DataCategoryGroupName=Agency, DataCategoryName=EBD_COBRA},
-  {DataCategoryGroupName=Info_Sheet, DataCategoryName=Benefits}
-]}`}</pre>
-                              <strong className="mt-2 block">Output Columns:</strong>
-                              <pre className="mt-1">datacategorygroup.Agency     | datacategorygroup.Info_Sheet
-EBD_NYS_Retiree+EBD_COBRA     | Benefits</pre>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          DataCategorySelections Column
-                        </label>
-                        <select
-                          value={dataCategoryConfig.selectionColumn}
-                          onChange={(e) => {
-                            setDataCategoryConfig({ selectionColumn: e.target.value });
-                            
-                            if (e.target.value) {
-                              const allGroups = new Set();
-                              csvData.forEach(row => {
-                                const selections = row[e.target.value];
-                                if (selections) {
-                                  const parsed = parseDataCategorySelections(selections);
-                                  Object.keys(parsed).forEach(group => allGroups.add(group));
+                      <h2 className="text-2xl font-bold text-gray-800">Configure Data Categories</h2>
+                      <select value={dataCategoryConfig.selectionColumn} 
+                              onChange={(e) => {
+                                setDataCategoryConfig({ selectionColumn: e.target.value });
+                                if (e.target.value) {
+                                  const allGroups = new Set();
+                                  csvData.forEach(row => {
+                                    const selections = row[e.target.value];
+                                    if (selections) {
+                                      const parsed = parseDataCategorySelections(selections);
+                                      Object.keys(parsed).forEach(group => allGroups.add(group));
+                                    }
+                                  });
+                                  setDataCategoryGroups(Array.from(allGroups).map(group => ({
+                                    groupName: group,
+                                    columnName: `datacategorygroup.${group}`
+                                  })));
                                 }
-                              });
-                              
-                              setDataCategoryGroups(Array.from(allGroups).map(group => ({
-                                groupName: group,
-                                columnName: `datacategorygroup.${group}`
-                              })));
-                            }
-                          }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                        >
-                          <option value="">Select column...</option>
-                          {csvHeaders.map(header => (
-                            <option key={header} value={header}>{header}</option>
-                          ))}
-                        </select>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Column containing Salesforce DataCategorySelections data
-                        </p>
-                      </div>
-
+                              }}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="">Select DataCategorySelections column...</option>
+                        {csvHeaders.map(header => <option key={header} value={header}>{header}</option>)}
+                      </select>
                       {dataCategoryGroups.length > 0 && (
                         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                          <div className="flex items-start">
-                            <Check className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-green-900 mb-2">
-                                Detected {dataCategoryGroups.length} Data Category Groups
-                              </h3>
-                              <p className="text-sm text-green-800 mb-3">
-                                The following columns will be created in your output CSV:
-                              </p>
-                              <div className="bg-white rounded p-3">
-                                <div className="grid grid-cols-2 gap-2">
-                                  {dataCategoryGroups.map((group, index) => (
-                                    <div key={index} className="flex items-center text-sm">
-                                      <span className="font-mono text-indigo-600">{group.columnName}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                              <div className="mt-3 text-xs text-green-800">
-                                <strong>Note:</strong> Multiple categories in the same group will be joined with '+' separator.
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {dataCategoryConfig.selectionColumn && dataCategoryGroups.length === 0 && (
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                          <div className="flex items-start">
-                            <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 mr-3 flex-shrink-0" />
-                            <div>
-                              <h3 className="font-semibold text-yellow-900">No Category Groups Found</h3>
-                              <p className="text-sm text-yellow-800">
-                                Could not parse any data category groups from the selected column. Please verify the column contains valid DataCategorySelections data.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {dataCategoryConfig.selectionColumn && csvData.length > 0 && csvData[0][dataCategoryConfig.selectionColumn] && (
-                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                          <div className="flex items-start">
-                            <FileText className="h-5 w-5 text-purple-600 mt-0.5 mr-3 flex-shrink-0" />
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-purple-900 mb-2">Preview First Row</h3>
-                              <div className="text-xs bg-white p-3 rounded overflow-x-auto">
-                                <strong>Raw Data:</strong>
-                                <pre className="mt-1 text-gray-700">{csvData[0][dataCategoryConfig.selectionColumn].substring(0, 300)}...</pre>
-                                <strong className="mt-2 block">Parsed Result:</strong>
-                                <pre className="mt-1 text-gray-700">
-                                  {JSON.stringify(parseDataCategorySelections(csvData[0][dataCategoryConfig.selectionColumn]), null, 2)}
-                                </pre>
-                              </div>
-                            </div>
+                          <p className="font-semibold text-green-900">Detected {dataCategoryGroups.length} groups:</p>
+                          <div className="mt-2 space-y-1">
+                            {dataCategoryGroups.map((group, i) => (
+                              <div key={i} className="text-sm font-mono text-indigo-600">{group.columnName}</div>
+                            ))}
                           </div>
                         </div>
                       )}
@@ -1001,10 +588,6 @@ EBD_NYS_Retiree+EBD_COBRA     | Benefits</pre>
                   {step === 6 && (
                     <div className="space-y-6">
                       <h2 className="text-2xl font-bold text-gray-800">Generate Import Package</h2>
-                      <p className="text-gray-600">
-                        Review your settings and generate the ZIP file for Salesforce import.
-                      </p>
-                      
                       <div className="grid grid-cols-2 gap-6">
                         <div className="bg-gray-50 rounded-lg p-4">
                           <h3 className="font-semibold text-gray-800 mb-3">Summary</h3>
@@ -1012,10 +595,6 @@ EBD_NYS_Retiree+EBD_COBRA     | Benefits</pre>
                             <div className="flex justify-between">
                               <dt className="text-gray-600">Total Rows:</dt>
                               <dd className="font-medium">{csvData?.length || 0}</dd>
-                            </div>
-                            <div className="flex justify-between">
-                              <dt className="text-gray-600">Total Columns:</dt>
-                              <dd className="font-medium">{csvHeaders.length}</dd>
                             </div>
                             <div className="flex justify-between">
                               <dt className="text-gray-600">Rich Text Columns:</dt>
@@ -1029,102 +608,42 @@ EBD_NYS_Retiree+EBD_COBRA     | Benefits</pre>
                               <dt className="text-gray-600">Data Categories:</dt>
                               <dd className="font-medium">{dataCategoryGroups.length}</dd>
                             </div>
-                            <div className="flex justify-between">
-                              <dt className="text-gray-600">HTML Files:</dt>
-                              <dd className="font-medium">{richTextColumns.length * (csvData?.length || 0)}</dd>
-                            </div>
                           </dl>
                         </div>
-
                         <div className="bg-gray-50 rounded-lg p-4">
                           <h3 className="font-semibold text-gray-800 mb-3">Output Settings</h3>
                           <div className="space-y-3">
                             <div>
                               <label className="block text-xs text-gray-600 mb-1">CSV Encoding</label>
-                              <select
-                                value={outputSettings.csvEncoding}
-                                onChange={(e) => setOutputSettings(prev => ({ ...prev, csvEncoding: e.target.value }))}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
-                              >
+                              <select value={outputSettings.csvEncoding} onChange={(e) => setOutputSettings(p => ({ ...p, csvEncoding: e.target.value }))}
+                                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded">
                                 <option>UTF-8</option>
                                 <option>ISO-8859-1</option>
                               </select>
                             </div>
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1">CSV Separator</label>
-                              <select
-                                value={outputSettings.csvSeparator}
-                                onChange={(e) => setOutputSettings(prev => ({ ...prev, csvSeparator: e.target.value }))}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
-                              >
-                                <option value=",">Comma (,)</option>
-                                <option value=";">Semicolon (;)</option>
-                                <option value="|">Pipe (|)</option>
-                              </select>
-                            </div>
-                            <div>
                               <label className="block text-xs text-gray-600 mb-1">Output Filename</label>
-                              <input
-                                type="text"
-                                value={outputSettings.outputFilename}
-                                onChange={(e) => setOutputSettings(prev => ({ ...prev, outputFilename: e.target.value }))}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
-                              />
+                              <input type="text" value={outputSettings.outputFilename} onChange={(e) => setOutputSettings(p => ({ ...p, outputFilename: e.target.value }))}
+                                     className="w-full px-2 py-1 text-sm border border-gray-300 rounded" />
                             </div>
                           </div>
                         </div>
                       </div>
-
-                      <div className="flex gap-4">
-                        <button
-                          onClick={generateZipFile}
-                          className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold text-lg"
-                        >
-                          <Download size={24} />
-                          Generate & Download ZIP
-                        </button>
-                        <button
-                          onClick={saveTemplate}
-                          className="px-6 py-4 border-2 border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 font-semibold"
-                        >
-                          Save Template
-                        </button>
-                      </div>
-
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <div className="flex items-start">
-                          <Check className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
-                          <div>
-                            <h3 className="font-semibold text-green-900">Ready to Generate</h3>
-                            <p className="text-sm text-green-800">
-                              Your ZIP file will contain: properties.properties, {outputSettings.outputFilename}, 
-                              and {richTextColumns.length * (csvData?.length || 0)} HTML files in organized folders.
-                              The ZIP will be ready to upload directly to Salesforce!
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                      <button onClick={generateZipFile} className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold text-lg">
+                        <Download size={24} /> Generate & Download ZIP
+                      </button>
                     </div>
                   )}
 
                   <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
-                    <button
-                      onClick={() => setStep(Math.max(1, step - 1))}
-                      disabled={step === 1}
-                      className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <ChevronLeft size={20} />
-                      Previous
+                    <button onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1}
+                            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                      <ChevronLeft size={20} /> Previous
                     </button>
-                    
                     {step < 6 && (
-                      <button
-                        onClick={() => setStep(Math.min(6, step + 1))}
-                        disabled={!csvData}
-                        className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Next
-                        <ChevronRight size={20} />
+                      <button onClick={() => setStep(Math.min(6, step + 1))} disabled={!csvData}
+                              className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Next <ChevronRight size={20} />
                       </button>
                     )}
                   </div>
@@ -1134,8 +653,14 @@ EBD_NYS_Retiree+EBD_COBRA     | Benefits</pre>
           );
         };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<SalesforceKnowledgeImportTool />);
+        // Wait for all libraries to load
+        if (typeof React !== 'undefined' && typeof ReactDOM !== 'undefined' && typeof Papa !== 'undefined') {
+          const root = ReactDOM.createRoot(document.getElementById('root'));
+          root.render(React.createElement(SalesforceKnowledgeImportTool));
+        } else {
+          console.error('Libraries not loaded properly');
+          document.getElementById('root').innerHTML = '<div style="padding: 20px; color: red;">Error: Required libraries failed to load. Please check your internet connection and refresh the page.</div>';
+        }
     </script>
 </body>
 </html>
