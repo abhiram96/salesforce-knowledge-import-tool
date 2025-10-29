@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://abhiram96.github.io/salesforce-knowledge-import-tool/sitemap.xml
